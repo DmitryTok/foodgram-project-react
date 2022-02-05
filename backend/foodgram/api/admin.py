@@ -25,6 +25,10 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('id', 'name')
     empty_value_display = '-NONE-'
 
+    def count_favorite(self, obj):
+        user = self.context['request'].user
+        return Favorite.objects.filter(user=user, recipe=obj).count()
+
 
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):

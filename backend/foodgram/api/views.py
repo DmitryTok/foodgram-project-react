@@ -1,12 +1,10 @@
-from os import name
 from django.shortcuts import get_object_or_404
-from pyrsistent import inc
 from api.models import Tag, Ingredient, Recipe, Favorite, ShopingCart, IngredientAmount
 from api.serializers import TagSerializer, IngredientSerializer, CreateRecipeSerializer, ListRecipeSerializer, ShoppingCartSerializer
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from foodgram.permissions import IsAuthorOrAdminOrReadOnly
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 from users.serializers import RecipeForFollowSerializer
@@ -19,16 +17,20 @@ from reportlab.lib.pagesizes import letter
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
-    permission_classes = [AllowAny,]
+    permission_classes = [IsAuthorOrAdminOrReadOnly,]
     pagination_class = LimitOffsetPagination
     serializer_class = TagSerializer
+    filter_backends = (filters.SearchFilter)
+    search_fields = ('name',)
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
-    permission_classes = [AllowAny,]
+    permission_classes = [IsAuthorOrAdminOrReadOnly,]
     serializer_class = IngredientSerializer
     pagination_class = LimitOffsetPagination
+    filter_backends = (filters.SearchFilter)
+    search_fields = ('name',)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -36,6 +38,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthorOrAdminOrReadOnly,]
     serializer_class = CreateRecipeSerializer
     pagination_class = LimitOffsetPagination
+    filter_backends = (filters.SearchFilter)
+    search_fields = ('tags__name',)
 
     def perform_create(self, serializer):
         return serializer.save(author=self.request.user)
@@ -78,7 +82,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     detail=False,
     methods=['GET'],
     url_path='download_shoping_cart',
-    permission_classes=[AllowAny]
+    permission_classes=[IsAuthenticated]
     )
     def download_shoping_cart(self, request):
         bytestream_buffer = io.BytesIO()
