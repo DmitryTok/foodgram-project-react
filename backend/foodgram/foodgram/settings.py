@@ -8,7 +8,7 @@ SECRET_KEY = 'django-insecure-_28+b-t1heo6_ub0%=*$d-pi%0*darq*8lj9fb89-gz_k7^cm)
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost', '51.250.13.154', 'diplomproject.sytes.net']
 
 
 INSTALLED_APPS = [
@@ -139,5 +139,5 @@ DJOSER = {
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
-MEDIA_URL = '/media_dir/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_dir') 

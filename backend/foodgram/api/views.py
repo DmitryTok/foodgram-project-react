@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 from users.serializers import RecipeForFollowSerializer
+from django.db.models import Sum
 from django.http import FileResponse
 import io
 from reportlab.pdfgen import canvas
@@ -95,7 +96,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         text_object.setTextOrigin(inch, inch)
         text_object.setFont('Helvetica', 14)
         user = request.user
-        ingredients = IngredientAmount.objects.filter(recipe__recipe_cart__user=user)
+        ingredients = IngredientAmount.objects.filter(
+            recipe__recipe_cart__user=user
+        ).values(
+            'ingredient__name', 'ingredient__measurement_unit'
+        ).annotate(Sum('amount'))
         print(ingredients)
         lines = []
         for ingredient in ingredients:
