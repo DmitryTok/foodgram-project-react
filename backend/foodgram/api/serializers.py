@@ -140,7 +140,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                                                    instance.cooking_time)
         instance.tags.set(tags)
         instance.save()
-        ingredients_data = validated_data.pop('ingredients_recipe')
+        ingredients_data = validated_data.pop('ingredients_recipes')
         IngredientAmount.objects.filter(recipe=instance).all().delete()
         for ingredient in ingredients_data:
             ing = Ingredient.objects.get(id=ingredient['id'])
