@@ -8,7 +8,7 @@ SECRET_KEY = 'django-insecure-_28+b-t1heo6_ub0%=*$d-pi%0*darq*8lj9fb89-gz_k7^cm)
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '51.250.13.154', 'diplomproject.sytes.net']
+ALLOWED_HOSTS = ['localhost', '51.250.13.154', 'diplomproject.sytes.net', 'backend']
 
 
 INSTALLED_APPS = [
@@ -65,7 +65,7 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', default='postgres'),
         'USER': os.getenv('POSTGRES_USER', default='postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
-        'HOST': os.getenv('DB_HOST', default='DB'),
+        'HOST': os.getenv('DB_HOST', default='db'),
         'PORT': os.getenv('DB_PORT', default='5432')
     }
 }
@@ -137,7 +137,7 @@ DJOSER = {
 }
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media_dir') 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 

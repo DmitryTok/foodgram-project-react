@@ -21,7 +21,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthorOrAdminOrReadOnly,]
     pagination_class = LimitOffsetPagination
     serializer_class = TagSerializer
-    filter_backends = (filters.SearchFilter)
+    filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
 
@@ -30,7 +30,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthorOrAdminOrReadOnly,]
     serializer_class = IngredientSerializer
     pagination_class = LimitOffsetPagination
-    filter_backends = (filters.SearchFilter)
+    filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
 
@@ -39,7 +39,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthorOrAdminOrReadOnly,]
     serializer_class = CreateRecipeSerializer
     pagination_class = LimitOffsetPagination
-    filter_backends = (filters.SearchFilter)
+    filter_backends = (filters.SearchFilter,)
     search_fields = ('tags__name',)
 
     def perform_create(self, serializer):
