@@ -34,15 +34,15 @@ docker-compose up -d --build
 ```
 ## 2.Make migrations
 ```
-docker-compose exec web python manage.py migrate
+docker-compose exec backend python manage.py migrate
 ```
 ## 3.Create a Django superuser
 ```
-docker-compose exec web python manage.py createsuperuser
+docker-compose exec backend python manage.py createsuperuser
 ```
 ## 4.Collect static
 ```
-docker-compose exec web python manage.py collectstatic --no-input
+docker-compose exec backend python manage.py collectstatic --no-input
 ```
 ***
 ### Example of API request:
