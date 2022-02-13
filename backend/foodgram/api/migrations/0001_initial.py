@@ -7,22 +7,44 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Tag',
+            name="Tag",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=150, verbose_name='Tag name')),
-                ('color', models.CharField(choices=[('#0000FF', 'Blue'), ('#FFA500', 'Orange'), ('#008000', 'Green'), ('#800080', 'Purple'), ('#FFFF00', 'Yellow')], max_length=50, verbose_name='HEX Color')),
-                ('slug', models.SlugField(max_length=150, verbose_name='Slug')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(
+                    max_length=150, verbose_name="Tag name")),
+                (
+                    "color",
+                    models.CharField(
+                        choices=[
+                            ("#0000FF", "Blue"),
+                            ("#FFA500", "Orange"),
+                            ("#008000", "Green"),
+                            ("#800080", "Purple"),
+                            ("#FFFF00", "Yellow"),
+                        ],
+                        max_length=50,
+                        verbose_name="HEX Color",
+                    ),
+                ),
+                ("slug", models.SlugField(
+                    max_length=150, verbose_name="Slug")),
             ],
             options={
-                'verbose_name': 'Tag',
-                'verbose_name_plural': 'Tags',
-                'ordering': ('name',),
+                "verbose_name": "Tag",
+                "verbose_name_plural": "Tags",
+                "ordering": ("name",),
             },
         ),
     ]

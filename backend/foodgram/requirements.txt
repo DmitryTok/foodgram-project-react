@@ -47,3 +47,7 @@ uritemplate==4.1.1
 urllib3==1.26.8
 webcolors==1.11.1
 zipp==3.7.0
+flake8==4.0.1
+flake8-broken-line==0.4.0
+flake8-isort==4.1.1
+isort==5.9.3

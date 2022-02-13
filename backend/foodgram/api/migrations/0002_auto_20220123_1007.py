@@ -6,23 +6,37 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0001_initial'),
+        ("api", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='tag',
-            name='color',
-            field=models.CharField(choices=[('#0000FF', 'Blue'), ('#FFA500', 'Orange'), ('#008000', 'Green'), ('#800080', 'Purple'), ('#FFFF00', 'Yellow')], max_length=50, unique=True, verbose_name='HEX Color'),
+            model_name="tag",
+            name="color",
+            field=models.CharField(
+                choices=[
+                    ("#0000FF", "Blue"),
+                    ("#FFA500", "Orange"),
+                    ("#008000", "Green"),
+                    ("#800080", "Purple"),
+                    ("#FFFF00", "Yellow"),
+                ],
+                max_length=50,
+                unique=True,
+                verbose_name="HEX Color",
+            ),
         ),
         migrations.AlterField(
-            model_name='tag',
-            name='name',
-            field=models.CharField(max_length=150, unique=True, verbose_name='Tag name'),
+            model_name="tag",
+            name="name",
+            field=models.CharField(
+                max_length=150, unique=True, verbose_name="Tag name"
+            ),
         ),
         migrations.AlterField(
-            model_name='tag',
-            name='slug',
-            field=models.SlugField(max_length=150, unique=True, verbose_name='Slug'),
+            model_name="tag",
+            name="slug",
+            field=models.SlugField(
+                max_length=150, unique=True, verbose_name="Slug"),
         ),
     ]

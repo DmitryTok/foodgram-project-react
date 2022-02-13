@@ -6,21 +6,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0004_alter_tag_color'),
+        ("api", "0004_alter_tag_color"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Ingredient',
+            name="Ingredient",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=150, verbose_name='Name')),
-                ('measurement_unit', models.CharField(max_length=150, verbose_name='Unit')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(
+                    max_length=150, verbose_name="Name")),
+                (
+                    "measurement_unit",
+                    models.CharField(max_length=150, verbose_name="Unit"),
+                ),
             ],
             options={
-                'verbose_name': 'Ingredient',
-                'verbose_name_plural': 'Ingredients',
-                'ordering': ('id',),
+                "verbose_name": "Ingredient",
+                "verbose_name_plural": "Ingredients",
+                "ordering": ("id",),
             },
         ),
     ]
