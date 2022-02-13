@@ -1,9 +1,8 @@
 import webcolors
-from drf_extra_fields.fields import Base64ImageField
-from rest_framework import serializers
-
 from api.models import (Favorite, Ingredient, IngredientAmount, Recipe,
                         ShopingCart, Tag)
+from drf_extra_fields.fields import Base64ImageField
+from rest_framework import serializers
 from users.serializers import CustomUserSerializer
 
 
