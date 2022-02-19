@@ -3,7 +3,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = "django-insecure-_28+b-t1heo6_ub0%=*$d-pi%0*darq*8lj9fb89-gz_k7^cm)"
 
 DEBUG = True
 
@@ -11,7 +11,8 @@ ALLOWED_HOSTS = [
     "localhost",
     "51.250.13.154",
     "diplomproject.sytes.net",
-    "backend"
+    "backend",
+    "127.0.0.1",
 ]
 
 INSTALLED_APPS = [
@@ -62,15 +63,12 @@ WSGI_APPLICATION = "foodgram.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": os.getenv(
-            "DB_ENGINE",
-            default="django.db.backends.postgresql"
-        ),
-        "NAME": os.getenv("DB_NAME", default="postgres"),
-        "USER": os.getenv("POSTGRES_USER", default="postgres"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD", default="postgres"),
-        "HOST": os.getenv("DB_HOST", default="db"),
-        "PORT": os.getenv("DB_PORT", default="5432"),
+        "ENGINE": os.environ.get("DB_ENGINE", default="django.db.backends.postgresql"),
+        "NAME": os.environ.get("DB_NAME", default="foodgrm_db"),
+        "USER": os.environ.get("POSTGRES_USER", default="postgres"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", default="postgres"),
+        "HOST": os.environ.get("DB_HOST", default="db"),
+        "PORT": os.environ.get("DB_PORT", default="5432"),
     }
 }
 
@@ -96,9 +94,7 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_PAGINATION_CLASS": (
-        "rest_framework.pagination.PageNumberPagination"
-    ),
+    "DEFAULT_PAGINATION_CLASS": ("rest_framework.pagination.PageNumberPagination"),
     "PAGE_SIZE": 5,
 }
 
@@ -120,8 +116,8 @@ DJOSER = {
     "HIDE_USERS": False,
 }
 
-STATIC_URL = "/static_backend/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static_backend")
+STATIC_URL = "/static_files/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static_files")
 
-MEDIA_URL = "/media_backend/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media_backend")
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")

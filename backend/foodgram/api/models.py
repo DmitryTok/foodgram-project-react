@@ -6,21 +6,9 @@ User = get_user_model()
 
 
 class Tag(models.Model):
-    name = models.CharField(
-        max_length=150,
-        unique=True,
-        verbose_name="Tag name"
-    )
-    color = models.CharField(
-        max_length=50,
-        unique=True,
-        verbose_name="HEX Color"
-    )
-    slug = models.SlugField(
-        max_length=150,
-        unique=True,
-        verbose_name="Slug"
-    )
+    name = models.CharField(max_length=150, unique=True, verbose_name="Tag name")
+    color = models.CharField(max_length=50, unique=True, verbose_name="HEX Color")
+    slug = models.SlugField(max_length=150, unique=True, verbose_name="Slug")
 
     class Meta:
         ordering = ("name",)
@@ -33,10 +21,7 @@ class Tag(models.Model):
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=150, verbose_name="Name")
-    measurement_unit = models.CharField(
-        max_length=150,
-        verbose_name="Unit"
-    )
+    measurement_unit = models.CharField(max_length=150, verbose_name="Unit")
 
     class Meta:
         ordering = ("id",)
@@ -48,11 +33,7 @@ class Ingredient(models.Model):
 
 
 class Recipe(models.Model):
-    tags = models.ManyToManyField(
-        Tag,
-        related_name="tags_recipe",
-        verbose_name="Tag"
-    )
+    tags = models.ManyToManyField(Tag, related_name="tags_recipe", verbose_name="Tag")
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -60,14 +41,9 @@ class Recipe(models.Model):
         verbose_name="Author",
     )
     ingredients = models.ManyToManyField(
-        Ingredient,
-        related_name="ingredients_resipe",
-        verbose_name="Ingredients"
+        Ingredient, related_name="ingredients_resipe", verbose_name="Ingredients"
     )
-    name = models.CharField(
-        max_length=200,
-        verbose_name="Recipe name"
-    )
+    name = models.CharField(max_length=200, verbose_name="Recipe name")
     image = models.ImageField(upload_to="media/", verbose_name="Image")
     text = models.TextField(max_length=2000, verbose_name="Text")
     cooking_time = models.PositiveSmallIntegerField(
@@ -106,11 +82,7 @@ class IngredientAmount(models.Model):
 
 
 class Favorite(models.Model):
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        verbose_name="User"
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="User")
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, verbose_name="Favorite recipe"
     )

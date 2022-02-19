@@ -22,8 +22,7 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("name", models.CharField(
-                    max_length=150, verbose_name="Tag name")),
+                ("name", models.CharField(max_length=150, verbose_name="Tag name")),
                 (
                     "color",
                     models.CharField(
@@ -38,8 +37,7 @@ class Migration(migrations.Migration):
                         verbose_name="HEX Color",
                     ),
                 ),
-                ("slug", models.SlugField(
-                    max_length=150, verbose_name="Slug")),
+                ("slug", models.SlugField(max_length=150, verbose_name="Slug")),
             ],
             options={
                 "verbose_name": "Tag",

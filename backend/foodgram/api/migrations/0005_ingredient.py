@@ -22,8 +22,7 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("name", models.CharField(
-                    max_length=150, verbose_name="Name")),
+                ("name", models.CharField(max_length=150, verbose_name="Name")),
                 (
                     "measurement_unit",
                     models.CharField(max_length=150, verbose_name="Unit"),

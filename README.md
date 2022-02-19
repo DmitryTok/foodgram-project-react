@@ -16,7 +16,7 @@ Application "Product Assistant": a site, on applications you can publish recipes
 ```
 HTTPS - https://github.com/DmitryTok/foodgram-project-react.git
 SSH - git@github.com:DmitryTok/foodgram-project-react.git
-GitHub CLI -  gh repo clone DmitryTok/foodgram-project-react
+GitHub CLI - gh repo clone DmitryTok/foodgram-project-react
 ```
 ## Create and feel the .env file
 ```

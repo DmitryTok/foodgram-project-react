@@ -5,11 +5,7 @@ User = get_user_model()
 
 
 class Follow(models.Model):
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        verbose_name="User"
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="User")
     following = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -22,9 +18,7 @@ class Follow(models.Model):
         verbose_name = "Follow"
         verbose_name_plural = "Follows"
         constraints = [
-            models.UniqueConstraint(
-                fields=("user", "following"),
-                name="unique_follow")
+            models.UniqueConstraint(fields=("user", "following"), name="unique_follow")
         ]
 
     def __str__(self):

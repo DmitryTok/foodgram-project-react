@@ -26,17 +26,13 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("name", models.CharField(
-                    max_length=200, verbose_name="Recipe name")),
-                ("image", models.ImageField(
-                    upload_to="", verbose_name="Image")),
-                ("text", models.TextField(
-                    max_length=2000, verbose_name="Text")),
+                ("name", models.CharField(max_length=200, verbose_name="Recipe name")),
+                ("image", models.ImageField(upload_to="", verbose_name="Image")),
+                ("text", models.TextField(max_length=2000, verbose_name="Text")),
                 (
                     "cooking_time",
                     models.PositiveSmallIntegerField(
-                        validators=[
-                            django.core.validators.MinValueValidator(1)],
+                        validators=[django.core.validators.MinValueValidator(1)],
                         verbose_name="Cooking time",
                     ),
                 ),
@@ -54,8 +50,7 @@ class Migration(migrations.Migration):
                         to="api.Ingredient", verbose_name="Ingredients"
                     ),
                 ),
-                ("tags", models.ManyToManyField(
-                    to="api.Tag", verbose_name="Tag")),
+                ("tags", models.ManyToManyField(to="api.Tag", verbose_name="Tag")),
             ],
             options={
                 "verbose_name": "Recipe",
@@ -78,8 +73,7 @@ class Migration(migrations.Migration):
                 (
                     "amount",
                     models.PositiveSmallIntegerField(
-                        validators=[
-                            django.core.validators.MinValueValidator(1)],
+                        validators=[django.core.validators.MinValueValidator(1)],
                         verbose_name="Amount",
                     ),
                 ),

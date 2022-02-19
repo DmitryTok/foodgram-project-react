@@ -1,4 +1,3 @@
-import webcolors
 from api.models import (Favorite, Ingredient, IngredientAmount, Recipe,
                         ShopingCart, Tag)
 from drf_extra_fields.fields import Base64ImageField
@@ -6,24 +5,10 @@ from rest_framework import serializers
 from users.serializers import CustomUserSerializer
 
 
-class HEXColor(serializers.Field):
-    def to_representation(self, value):
-        return value
-
-    def to_internal_value(self, data):
-        try:
-            data = webcolors.hex_to_name(data)
-        except ValueError:
-            raise serializers.ValidationError("This is not a HEX color")
-        return data
-
-
 class TagSerializer(serializers.ModelSerializer):
-    color = HEXColor()
-
     class Meta:
         model = Tag
-        fields = ("id", "name", "color", "slug")
+        fields = "__all__"
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -35,9 +20,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 class IngredientAmountSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source="ingredient.id")
     name = serializers.ReadOnlyField(source="ingredient.name")
-    measurement_unit = serializers.ReadOnlyField(
-        source="ingredient.measurement_unit"
-    )
+    measurement_unit = serializers.ReadOnlyField(source="ingredient.measurement_unit")
 
     class Meta:
         model = IngredientAmount
@@ -57,7 +40,9 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
 class ListRecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer(read_only=True)
-    ingredients = serializers.SerializerMethodField()
+    ingredients = serializers.PrimaryKeyRelatedField(
+        queryset=IngredientAmount.objects.all(), many=True
+    )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
@@ -77,11 +62,6 @@ class ListRecipeSerializer(serializers.ModelSerializer):
             "is_in_shopping_cart",
         )
 
-    def get_ingredients(self, obj):
-        return IngredientAmountSerializer(
-            IngredientAmount.objects.filter(recipe=obj).all(), many=True
-        ).data
-
     def get_is_favorited(self, obj):
         user = self.context["request"].user
         if user.is_anonymous:
@@ -98,9 +78,11 @@ class ListRecipeSerializer(serializers.ModelSerializer):
 class CreateRecipeSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=False)
     text = serializers.CharField(required=False)
-    ingredients = IngredientAmountSerializer(many=True)
+    ingredients = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Ingredient.objects.all()
+    )
     author = CustomUserSerializer(read_only=True)
-    tags = TagSerializer(many=True)
+    tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
     cooking_time = serializers.IntegerField()
     image = Base64ImageField()
 
@@ -119,46 +101,47 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
     def validate_cooking_time(self, cooking_time):
         if cooking_time <= 0:
-            raise serializers.ValidationError(
-                "Please fill the cookint time field"
-            )
+            raise serializers.ValidationError("Please fill the cookint time field")
         return cooking_time
 
     def create(self, validated_data):
+        user = self.context["request"].user
         tags = validated_data.pop("tags")
-        ingredients = validated_data.pop("ingredients")
-        user = self.context.get("request").user
-        create_recipe = Recipe.objects.create(author=user, **validated_data)
+        ingredients = validated_data.pop("ingredients_set")
+        recipe = Recipe.objects.create(auhor=user)
+        for tag in tags:
+            recipe.tags.add(tag)
         for ingredient in ingredients:
-            amount = ingredient.get("amount")
-            id = ingredient.get("id")
-            IngredientAmount.objects.get_or_create(
-                ingredient_id=id, recipe=create_recipe, amount=amount
+            current_ingredient = ingredient["ingredient"]["id"]
+            IngredientAmount.objects.create(
+                ingredient=current_ingredient,
+                recipe=recipe,
+                amount=ingredient["amount"],
             )
-        create_recipe.tags.set(tags)
-        create_recipe.save()
-        return create_recipe
+        return recipe
 
     def update(self, instance, validated_data):
-        tags = validated_data.pop("tags")
-        instance.author = validated_data.get("author", instance.author)
-        instance.name = validated_data.get("name", instance.name)
-        instance.image = validated_data.get("image", instance.image)
-        instance.text = validated_data.get("text", instance.text)
-        instance.cooking_time = validated_data.get(
-            "cooking_time", instance.cooking_time
-        )
-        instance.tags.set(tags)
-        instance.save()
-        ingredients_data = validated_data.pop("ingredients_recipes")
-        IngredientAmount.objects.filter(recipe=instance).all().delete()
-        for ingredient in ingredients_data:
-            ing = Ingredient.objects.get(id=ingredient["id"])
-            ing_for_rec = IngredientAmount.objects.create(
-                id=ingredient["id"],
-                ingredient=ing,
-                amount=ingredient["amount"],
+        if "ingredients_set" in validated_data:
+            instance.ingredients.clear()
+            ingredients = validated_data.pop("ingredients_set")
+            for ingredient in ingredients:
+                current_ingredient = ingredient["ingredient"]["id"]
+            IngredientAmount.objects.create(
+                ingredient=current_ingredient,
                 recipe=instance,
+                amount=ingredient["amount"],
             )
-            ing_for_rec.save()
+        if "tags" in validated_data:
+            instance.tags.set(validated_data.get("tags"))
+        if "name" in validated_data:
+            instance.name = validated_data.get("name", instance.name)
+        if "text" in validated_data:
+            instance.text = validated_data.get("text", instance.text)
+        if "image" in validated_data:
+            instance.image = validated_data.get("image", instance.image)
+        if "cooking_time" in validated_data:
+            instance.cooking_time = validated_data.get(
+                "cooking_time", instance.cooking_time
+            )
+        instance.save()
         return instance

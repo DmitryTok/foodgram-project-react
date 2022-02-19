@@ -1,5 +1,6 @@
 import io
 
+from api.filters import CustomRecipeFilter
 from api.models import (Favorite, Ingredient, IngredientAmount, Recipe,
                         ShopingCart, Tag)
 from api.serializers import (CreateRecipeSerializer, IngredientSerializer,
@@ -8,36 +9,43 @@ from api.serializers import (CreateRecipeSerializer, IngredientSerializer,
 from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from foodgram.permissions import IsAuthorOrAdminOrReadOnly
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
-from rest_framework import filters, status, viewsets
+from rest_framework import filters, mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from users.serializers import RecipeForFollowSerializer
 
 
-class TagViewSet(viewsets.ReadOnlyModelViewSet):
+class ReadOrCreateMixin(
+    mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
+):
+    pass
+
+
+class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     permission_classes = [
-        IsAuthorOrAdminOrReadOnly,
+        AllowAny,
     ]
-    pagination_class = LimitOffsetPagination
     serializer_class = TagSerializer
+    pagination_class = None
     filter_backends = (filters.SearchFilter,)
     search_fields = ("name",)
 
 
-class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     permission_classes = [
         IsAuthorOrAdminOrReadOnly,
     ]
     serializer_class = IngredientSerializer
-    pagination_class = LimitOffsetPagination
+    pagination_class = None
     filter_backends = (filters.SearchFilter,)
     search_fields = ("name",)
 
@@ -49,16 +57,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
     ]
     serializer_class = CreateRecipeSerializer
     pagination_class = LimitOffsetPagination
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ("tags__name",)
-
-    def perform_create(self, serializer):
-        return serializer.save(author=self.request.user)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = CustomRecipeFilter
 
     def get_serializer_class(self):
-        if self.action == "list":
+        if self.request.method == "POST" or self.request.method == "PATCH":
+            return CreateRecipeSerializer
+        if self.request.method == "GET":
             return ListRecipeSerializer
-        return CreateRecipeSerializer
 
     @action(
         detail=True,
@@ -82,9 +88,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == "DELETE":
-            delete_shoping_cart = ShopingCart.objects.filter(
-                user=user, recipe=recipe
-            )
+            delete_shoping_cart = ShopingCart.objects.filter(user=user, recipe=recipe)
             if delete_shoping_cart.exists():
                 delete_shoping_cart.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
@@ -98,25 +102,24 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shoping_cart(self, request):
         bytestream_buffer = io.BytesIO()
-        custom_canvas = canvas.Canvas(
-            bytestream_buffer,
-            pagesize=letter,
-            bottomup=0
-        )
+        custom_canvas = canvas.Canvas(bytestream_buffer, pagesize=letter, bottomup=0)
         text_object = custom_canvas.beginText()
         text_object.setTextOrigin(inch, inch)
         text_object.setFont("Helvetica", 14)
-        user = request.user
-        ingredients = (
-            IngredientAmount.objects.filter(recipe__recipe_cart__user=user)
-            .values("ingredient__name", "ingredient__measurement_unit")
-            .annotate(Sum("amount"))
+        ingredients_list = (
+            IngredientAmount.objects.filter(recipe__recipe_cart__user=request.user)
+            .values_list("ingredient__name", "ingredient__measurement_unit")
+            .annotate(amount=Sum("amount"))
+            .order_by("ingredient__name")
         )
+        print(ingredients_list)
         lines = []
-        for ingredient in ingredients:
-            lines.append(ingredient.ingredient)
-            lines.append(ingredient.recipe)
-            lines.append(ingredient.amount)
+        for ingredient in ingredients_list:
+            lines.append(
+                f"{ingredient['ingredient__name']}"
+                f"{ingredient['ingredient__measurement_unit']}"
+                f"{ingredient['amount']}"
+            )
         for line in lines:
             text_object.textLine(line)
         custom_canvas.drawText(text_object)
@@ -124,7 +127,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         custom_canvas.save()
         bytestream_buffer.seek(0)
         return FileResponse(
-            bytestream_buffer, as_attachment=True, filename="Ingredients.pdf"
+            bytestream_buffer, as_attachment=True, filename="shoping_list.pdf"
         )
 
     @action(
