@@ -3,9 +3,9 @@ import io
 from api.filters import CustomRecipeFilter
 from api.models import (Favorite, Ingredient, IngredientAmount, Recipe,
                         ShopingCart, Tag)
-from api.serializers import (CreateRecipeSerializer, IngredientSerializer,
-                             ListRecipeSerializer, ShoppingCartSerializer,
-                             TagSerializer, FavoriteSerializer)
+from api.serializers import (CreateRecipeSerializer, FavoriteSerializer,
+                             IngredientSerializer, ListRecipeSerializer,
+                             ShoppingCartSerializer, TagSerializer)
 from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
