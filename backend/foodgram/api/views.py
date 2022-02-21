@@ -5,7 +5,7 @@ from api.models import (Favorite, Ingredient, IngredientAmount, Recipe,
                         ShopingCart, Tag)
 from api.serializers import (CreateRecipeSerializer, IngredientSerializer,
                              ListRecipeSerializer, ShoppingCartSerializer,
-                             TagSerializer)
+                             TagSerializer, FavoriteSerializer)
 from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
@@ -14,18 +14,12 @@ from foodgram.permissions import IsAuthorOrAdminOrReadOnly
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
-from rest_framework import filters, mixins, status, viewsets
+from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from users.serializers import RecipeForFollowSerializer
-
-
-class ReadOrCreateMixin(
-    mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
-):
-    pass
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -146,7 +140,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             favorite = Favorite.objects.create(user=user, recipe=recipe)
-            serializer = RecipeForFollowSerializer(
+            serializer = FavoriteSerializer(
                 favorite, context={"request": request}
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
