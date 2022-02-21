@@ -122,14 +122,14 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.context["request"].user
         tags = validated_data.pop("tags")
-        ingredients = validated_data.pop("ingredients_set")
+        ingredients = validated_data.pop("ingredients")
         recipe = Recipe.objects.create(auhor=user)
         for tag in tags:
             recipe.tags.add(tag)
         for ingredient in ingredients:
             current_ingredient = ingredient["ingredient"]
             IngredientAmount.objects.create(
-                ingredient=current_ingredient,
+                ingredient=current_ingredient["id"],
                 recipe=recipe,
                 amount=ingredient["amount"],
             )
@@ -138,7 +138,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         if "ingredients_set" in validated_data:
             instance.ingredients.clear()
-            ingredients = validated_data.pop("ingredients_set")
+            ingredients = validated_data.pop("ingredients")
             for ingredient in ingredients:
                 current_ingredient = ingredient["ingredient"]
             IngredientAmount.objects.create(
