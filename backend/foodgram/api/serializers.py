@@ -2,6 +2,7 @@ from api.models import (Favorite, Ingredient, IngredientAmount, Recipe,
                         ShopingCart, Tag)
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
+from backend.foodgram.api.models import User
 from users.serializers import CustomUserSerializer
 
 
@@ -35,6 +36,19 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ("id", "name", "image", "cooking_time")
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    recipe = serializers.PrimaryKeyRelatedField(
+        queryset=Favorite.objects.all()
+    )
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all()
+    )
+
+    class Meta:
+        model = Favorite
+        fields = "recipe", "user"
 
 
 class ListRecipeSerializer(serializers.ModelSerializer):
@@ -112,7 +126,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         for tag in tags:
             recipe.tags.add(tag)
         for ingredient in ingredients:
-            current_ingredient = ingredient["ingredient"]["id"]
+            current_ingredient = ingredient["ingredient"]
             IngredientAmount.objects.create(
                 ingredient=current_ingredient,
                 recipe=recipe,
@@ -125,7 +139,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
             instance.ingredients.clear()
             ingredients = validated_data.pop("ingredients_set")
             for ingredient in ingredients:
-                current_ingredient = ingredient["ingredient"]["id"]
+                current_ingredient = ingredient["ingredient"]
             IngredientAmount.objects.create(
                 ingredient=current_ingredient,
                 recipe=instance,
