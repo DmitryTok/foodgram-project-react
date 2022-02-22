@@ -1,10 +1,12 @@
 from api.models import (Favorite, Ingredient, IngredientAmount, Recipe,
                         ShopingCart, Tag)
+from django.contrib.auth import get_user_model
+from django.forms import IntegerField
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from users.serializers import CustomUserSerializer
 
-from backend.foodgram.api.models import User
+User = get_user_model()
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -29,6 +31,17 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "measurement_unit")
 
 
+class IngredientForRecipeSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all()
+    )
+    amount = IntegerField()
+
+    class Meta:
+        model = IngredientAmount
+        fields = ("id", "amount")
+
+
 class ShoppingCartSerializer(serializers.ModelSerializer):
     name = serializers.ReadOnlyField(source="recipe.name")
     image = serializers.ImageField(source="recipe.image")
@@ -49,7 +62,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Favorite
-        fields = "recipe", "user"
+        fields = ("recipe", "user")
 
 
 class ListRecipeSerializer(serializers.ModelSerializer):
@@ -93,9 +106,7 @@ class ListRecipeSerializer(serializers.ModelSerializer):
 class CreateRecipeSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=False)
     text = serializers.CharField(required=False)
-    ingredients = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Ingredient.objects.all()
-    )
+    ingredients = IngredientForRecipeSerializer(many=True)
     author = CustomUserSerializer(read_only=True)
     tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
     cooking_time = serializers.IntegerField()
