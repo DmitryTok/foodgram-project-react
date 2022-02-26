@@ -12,8 +12,8 @@ services:
     image: 258647/backend
     restart: always
     volumes:
-      - static_value:/app/static_files/
-      - media_value:/app/media/
+      - static_value:/backend/static_files/
+      - media_value:/backend/media/
       - ../backend:/backend
     depends_on:
       - db

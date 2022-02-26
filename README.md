@@ -44,6 +44,10 @@ docker-compose exec backend python manage.py createsuperuser
 ```
 docker-compose exec backend python manage.py collectstatic --no-input
 ```
+## 5.Load data to database
+```
+docker-compose exec backend python manage.py loaddata ingredients.json
+```
 ***
 ### Example of API request:
 
