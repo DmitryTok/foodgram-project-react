@@ -1,5 +1,7 @@
-from api.models import Favorite, Ingredient, Recipe, ShopingCart, Tag
 from django.contrib import admin
+
+from api.models import (Favorite, Ingredient, IngredientAmount, Recipe,
+                        ShopingCart, Tag)
 
 
 @admin.register(Tag)
@@ -43,4 +45,12 @@ class ShopingCartAdmin(admin.ModelAdmin):
     list_display = ("id", "user", "recipe")
     search_fields = ("id", "user")
     list_filter = ("id", "user")
+    empty_value_display = "-NONE-"
+
+
+@admin.register(IngredientAmount)
+class IngredientAmount(admin.ModelAdmin):
+    list_display = ("id", "ingredient", "recipe")
+    search_fields = ("id", "ingredient", "recipe")
+    list_filter = ("id", "ingredient", "recipe")
     empty_value_display = "-NONE-"

@@ -1,4 +1,12 @@
-import io
+from django.db.models import Sum
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 
 from api.filters import CustomRecipeFilter
 from api.models import (Favorite, Ingredient, IngredientAmount, Recipe,
@@ -6,19 +14,7 @@ from api.models import (Favorite, Ingredient, IngredientAmount, Recipe,
 from api.serializers import (CreateRecipeSerializer, FavoriteSerializer,
                              IngredientSerializer, ListRecipeSerializer,
                              ShoppingCartSerializer, TagSerializer)
-from django.db.models import Sum
-from django.http import FileResponse
-from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
 from foodgram.permissions import IsAuthorOrAdminOrReadOnly
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import inch
-from reportlab.pdfgen import canvas
-from rest_framework import filters, status, viewsets
-from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -90,36 +86,33 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=False,
         methods=["GET"],
-        url_path="download_shoping_cart",
-        permission_classes=[IsAuthenticated],
+        url_path="shopping_cart",
+        permission_classes=[AllowAny],
     )
-    def download_shoping_cart(self, request):
-        bytestream_buffer = io.BytesIO()
-        custom_canvas = canvas.Canvas(bytestream_buffer, pagesize=letter, bottomup=0)
-        text_object = custom_canvas.beginText()
-        text_object.setTextOrigin(inch, inch)
-        text_object.setFont("Helvetica", 14)
-        ingredients_list = (
+    def shoping_cart(self, request):
+        all_count_ingredients = (
             IngredientAmount.objects.filter(recipe__recipe_cart__user=request.user)
-            .values_list("ingredient__name", "ingredient__measurement_unit")
+            .values("ingredient__name", "ingredient__measurement_unit")
             .annotate(amount=Sum("amount"))
-            .order_by("ingredient__name")
         )
-        lines = []
-        for ingredient in ingredients_list:
-            lines.append(
-                f"{ingredient['ingredient__name']}"
-                f"{ingredient['ingredient__measurement_unit']}"
-                f"{ingredient['amount']}"
+        print(all_count_ingredients)
+        shop_list = {}
+        for ingredient in all_count_ingredients:
+            amount = ingredient["amount"]
+            name = ingredient["ingredient__name"]
+            measurement_unit = ingredient["ingredient__measurement_unit"]
+            shop_list[name] = {"amount": amount, "measurement_unit": measurement_unit}
+        out_list = ["Ingredient list\n\n"]
+        for ingr, value in shop_list.items():
+            out_list.append(
+                f" {ingr} - {value['amount']} " f"{value['measurement_unit']}\n"
             )
-        for line in lines:
-            text_object.textLine(line)
-        custom_canvas.drawText(text_object)
-        custom_canvas.showPage()
-        custom_canvas.save()
-        bytestream_buffer.seek(0)
-        return FileResponse(
-            bytestream_buffer, as_attachment=True, filename="shoping_list.pdf"
+        return HttpResponse(
+            out_list,
+            {
+                "Content-Type": "text/plain",
+                "Content-Disposition": 'attachment; filename="out_list.txt"',
+            },
         )
 
     @action(
@@ -138,9 +131,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             favorite = Favorite.objects.create(user=user, recipe=recipe)
-            serializer = FavoriteSerializer(
-                favorite, context={"request": request}
-            )
+            serializer = FavoriteSerializer(favorite, context={"request": request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == "DELETE":
