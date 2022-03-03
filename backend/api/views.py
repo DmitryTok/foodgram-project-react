@@ -9,11 +9,15 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from api.filters import CustomRecipeFilter
-from api.models import (Favorite, Ingredient, IngredientAmount, Recipe,
-                        ShopingCart, Tag)
-from api.serializers import (CreateRecipeSerializer, FavoriteSerializer,
-                             IngredientSerializer, ListRecipeSerializer,
-                             ShoppingCartSerializer, TagSerializer)
+from api.models import Favorite, Ingredient, IngredientAmount, Recipe, ShopingCart, Tag
+from api.serializers import (
+    CreateRecipeSerializer,
+    FavoriteSerializer,
+    IngredientSerializer,
+    ListRecipeSerializer,
+    ShoppingCartSerializer,
+    TagSerializer,
+)
 from foodgram.permissions import IsAuthorOrAdminOrReadOnly
 
 
