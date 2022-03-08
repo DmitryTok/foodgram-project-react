@@ -83,38 +83,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(
-        detail=False,
-        methods=["GET"],
-        url_path="shopping_cart",
-        permission_classes=[AllowAny],
-    )
-    def shoping_cart(self, request):
-        all_count_ingredients = (
-            IngredientAmount.objects.filter(recipe__recipe_cart__user=request.user)
-            .values("ingredient__name", "ingredient__measurement_unit")
-            .annotate(amount=Sum("amount"))
-        )
-        print(all_count_ingredients)
-        shop_list = {}
-        for ingredient in all_count_ingredients:
-            amount = ingredient["amount"]
-            name = ingredient["ingredient__name"]
-            measurement_unit = ingredient["ingredient__measurement_unit"]
-            shop_list[name] = {"amount": amount, "measurement_unit": measurement_unit}
-        out_list = ["Ingredient list\n\n"]
-        for ingr, value in shop_list.items():
-            out_list.append(
-                f" {ingr} - {value['amount']} " f"{value['measurement_unit']}\n"
-            )
-        return HttpResponse(
-            out_list,
-            {
-                "Content-Type": "text/plain",
-                "Content-Disposition": 'attachment; filename="out_list.txt"',
-            },
-        )
-
-    @action(
         detail=True,
         methods=["POST", "DELETE"],
         url_path="favorite",
@@ -139,3 +107,34 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 favorite.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(
+        detail=False,
+        methods=["GET"],
+        url_path="download_shopping_cart",
+        permission_classes=[IsAuthenticated]
+    )
+    def shoping_cart(self, request):
+        all_count_ingredients = (
+            IngredientAmount.objects.filter(recipe__recipe_cart__user=request.user)
+            .values("ingredient__name", "ingredient__measurement_unit")
+            .annotate(amount=Sum("amount"))
+        )
+        shop_list = {}
+        for ingredient in all_count_ingredients:
+            amount = ingredient["amount"]
+            name = ingredient["ingredient__name"]
+            measurement_unit = ingredient["ingredient__measurement_unit"]
+            shop_list[name] = {"amount": amount, "measurement_unit": measurement_unit}
+        out_list = ["Ingredient list\n\n"]
+        for ingr, value in shop_list.items():
+            out_list.append(
+                f" {ingr} - {value['amount']} " f"{value['measurement_unit']}\n"
+            )
+        return HttpResponse(
+            out_list,
+            {
+                "Content-Type": "text/plain",
+                "Content-Disposition": 'attachment; filename="out_list.txt"',
+            },
+        )
