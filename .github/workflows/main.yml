@@ -60,10 +60,7 @@ jobs:
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_progect
           sudo docker-compose stop
           sudo docker-compose rm backend
-          sudo docker-compose up -d
-          sudo docker-compose exec -T backend python manage.py makemigrations --noinput
-          sudo docker-compose exec -T backend python manage.py migrate--noinput
-          sudo docker-compose exec -T backend python manage.py collectstatic --no-input
+          rm .env
           touch .env
           echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
           echo DB_NAME=${{ secrets.DB_NAME }} >> .env
@@ -72,6 +69,10 @@ jobs:
           echo DB_HOST=${{ secrets.DB_HOST }} >> .env
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
           echo DJ_SECRET_KEY=${{ secrets.DJ_SECRET_KEY }} >> .env
+          sudo docker-compose up -d
+          sudo docker-compose exec -T backend python manage.py makemigrations --noinput
+          sudo docker-compose exec -T backend python manage.py migrate--noinput
+          sudo docker-compose exec -T backend python manage.py collectstatic --no-input
 
   send_message:
     runs-on: ubuntu-latest
