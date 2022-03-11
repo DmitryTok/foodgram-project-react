@@ -21,9 +21,8 @@ services:
       - ./.env
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: 258647/frontend
+    restart: always
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
