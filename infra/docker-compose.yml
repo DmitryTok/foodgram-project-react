@@ -21,15 +21,13 @@ services:
       - ./.env
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    build: 258647/foodgram-frontend
+    restart: always
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
       - backend
- 
- 
+
   nginx:
     image: nginx:1.19.3
     ports:
