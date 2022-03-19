@@ -30,23 +30,23 @@ SECRET_KEY=<...> # kay from settings.py
 ```
 ## 1.Assembly and run the container from "infra" folder
 ```
-docker-compose up -d --build
+sudo docker-compose up -d --build --force-recreate
 ```
 ## 2.Make migrations
 ```
-docker-compose exec backend python manage.py migrate
+sudo docker-compose exec backend python manage.py migrate
 ```
 ## 3.Create a Django superuser
 ```
-docker-compose exec backend python manage.py createsuperuser
+sudo docker-compose exec backend python manage.py createsuperuser
 ```
 ## 4.Collect static
 ```
-docker-compose exec backend python manage.py collectstatic --no-input
+sudo docker-compose exec backend python manage.py collectstatic --no-input
 ```
 ## 5.Load data to database
 ```
-docker-compose exec backend python manage.py loaddata fixtures/ingredients.json
+sudo docker-compose exec backend python manage.py loaddata dump.json
 ```
 ***
 ### Example of API request:
