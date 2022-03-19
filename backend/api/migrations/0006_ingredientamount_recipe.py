@@ -32,7 +32,8 @@ class Migration(migrations.Migration):
                 (
                     "cooking_time",
                     models.PositiveSmallIntegerField(
-                        validators=[django.core.validators.MinValueValidator(1)],
+                        validators=[
+                            django.core.validators.MinValueValidator(1)],
                         verbose_name="Cooking time",
                     ),
                 ),
@@ -73,7 +74,8 @@ class Migration(migrations.Migration):
                 (
                     "amount",
                     models.PositiveSmallIntegerField(
-                        validators=[django.core.validators.MinValueValidator(1)],
+                        validators=[
+                            django.core.validators.MinValueValidator(1)],
                         verbose_name="Amount",
                     ),
                 ),

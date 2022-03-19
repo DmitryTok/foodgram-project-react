@@ -25,7 +25,8 @@ class IngredientSerializer(serializers.ModelSerializer):
 class IngredientAmountSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source="ingredient.id")
     name = serializers.ReadOnlyField(source="ingredient.name")
-    measurement_unit = serializers.ReadOnlyField(source="ingredient.measurement_unit")
+    measurement_unit = serializers.ReadOnlyField(
+        source="ingredient.measurement_unit")
 
     class Meta:
         model = IngredientAmount
@@ -43,13 +44,15 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
     def validate(self, data):
         user = data["user"]
         recipe_id = data["recipe"].id
-        if ShopingCart.objects.filter(user=user, recipe__id=recipe_id).exists():
+        if ShopingCart.objects.filter(
+                user=user, recipe__id=recipe_id).exists():
             raise ValidationError("This recipe already in shopping cart")
         return data
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
-    recipe = serializers.PrimaryKeyRelatedField(queryset=Favorite.objects.all())
+    recipe = serializers.PrimaryKeyRelatedField(
+        queryset=Favorite.objects.all())
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
@@ -117,7 +120,8 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
     ingredients = AddRecipeIngredientsSerializer(
         many=True,
     )
-    tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
+    tags = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Tag.objects.all())
     cooking_time = serializers.IntegerField()
     image = Base64ImageField()
 
@@ -136,7 +140,8 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
     def validate_cooking_time(self, cooking_time):
         if cooking_time < 1:
-            raise serializers.ValidationError("Cooking time must be more than 0")
+            raise serializers.ValidationError(
+                "Cooking time must be more than 0")
         return cooking_time
 
     @staticmethod

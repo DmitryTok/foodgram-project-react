@@ -6,8 +6,14 @@ User = get_user_model()
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=150, unique=True, verbose_name="Tag name")
-    color = models.CharField(max_length=50, unique=True, verbose_name="HEX Color")
+    name = models.CharField(
+        max_length=150,
+        unique=True,
+        verbose_name="Tag name")
+    color = models.CharField(
+        max_length=50,
+        unique=True,
+        verbose_name="HEX Color")
     slug = models.SlugField(max_length=150, unique=True, verbose_name="Slug")
 
     class Meta:
@@ -33,7 +39,8 @@ class Ingredient(models.Model):
 
 
 class Recipe(models.Model):
-    tags = models.ManyToManyField(Tag, related_name="tags_recipe", verbose_name="Tag")
+    tags = models.ManyToManyField(
+        Tag, related_name="tags_recipe", verbose_name="Tag")
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -85,7 +92,10 @@ class IngredientAmount(models.Model):
 
 
 class Favorite(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="User")
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name="User")
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, verbose_name="Favorite recipe"
     )

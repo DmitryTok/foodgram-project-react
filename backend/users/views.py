@@ -25,7 +25,8 @@ class FollowApiView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         create_follow = Follow.objects.create(user=user, following=following)
-        serializer = ListFollowSerializer(create_follow, context={"request": request})
+        serializer = ListFollowSerializer(
+            create_follow, context={"request": request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk):

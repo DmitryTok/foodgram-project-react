@@ -77,7 +77,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == "DELETE":
-            delete_shoping_cart = ShopingCart.objects.filter(user=user, recipe=recipe)
+            delete_shoping_cart = ShopingCart.objects.filter(
+                user=user, recipe=recipe)
             if delete_shoping_cart.exists():
                 delete_shoping_cart.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
@@ -99,7 +100,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             favorite = Favorite.objects.create(user=user, recipe=recipe)
-            serializer = FavoriteSerializer(favorite, context={"request": request})
+            serializer = FavoriteSerializer(
+                favorite, context={"request": request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == "DELETE":
@@ -117,7 +119,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def shoping_cart(self, request):
         all_count_ingredients = (
-            IngredientAmount.objects.filter(recipe__recipe_cart__user=request.user)
+            IngredientAmount.objects.filter(
+                recipe__recipe_cart__user=request.user)
             .values("ingredient__name", "ingredient__measurement_unit")
             .annotate(amount=Sum("amount"))
         )
@@ -126,7 +129,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
             amount = ingredient["amount"]
             name = ingredient["ingredient__name"]
             measurement_unit = ingredient["ingredient__measurement_unit"]
-            shop_list[name] = {"amount": amount, "measurement_unit": measurement_unit}
+            shop_list[name] = {
+                "amount": amount,
+                "measurement_unit": measurement_unit}
         out_list = ["Ingredient list\n\n"]
         for ingr, value in shop_list.items():
             out_list.append(

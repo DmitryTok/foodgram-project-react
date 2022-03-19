@@ -18,7 +18,13 @@ class CustomUserCreateSerializer(UserCreateSerializer):
     )
 
     class Meta:
-        fields = ("email", "id", "password", "username", "first_name", "last_name")
+        fields = (
+            "email",
+            "id",
+            "password",
+            "username",
+            "first_name",
+            "last_name")
         model = User
         extra_kwargs = {
             "email": {"required": True},
@@ -33,7 +39,13 @@ class CustomUserSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
-        fields = ("email", "id", "username", "first_name", "last_name", "is_subscribed")
+        fields = (
+            "email",
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "is_subscribed")
         model = User
 
     def get_is_subscribed(self, obj):
