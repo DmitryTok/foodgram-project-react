@@ -68,3 +68,8 @@ pprint(request)
 - Django
 - Django REST Framework
 - Simple JWT
+
+## Admin settings
+- login: admin
+- Email: admin@admin.net
+- Password: admin
