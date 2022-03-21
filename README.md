@@ -73,3 +73,6 @@ pprint(request)
 - login: admin
 - Email: admin@admin.net
 - Password: admin
+
+## Server public ip
+The project is temporarily available at 51.250.13.154
