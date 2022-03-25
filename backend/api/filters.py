@@ -1,5 +1,8 @@
 from api.models import Recipe, Tag
+from django.contrib.auth import get_user_model
 from django_filters import rest_framework as filters
+
+User = get_user_model()
 
 
 class CustomRecipeFilter(filters.FilterSet):
@@ -8,7 +11,31 @@ class CustomRecipeFilter(filters.FilterSet):
         to_field_name="slug",
         queryset=Tag.objects.all(),
     )
+    author = filters.ModelChoiceFilter(queryset=User.objects.all())
+    is_favorited = filters.BooleanFilter(
+        method='get_favorite',
+        label='Favorited',
+    )
+    is_in_shopping_cart = filters.BooleanFilter(
+        method='get_shopping',
+        label='Is in shopping list',
+    )
 
     class Meta:
         model = Recipe
-        fields = ["author", "tags"]
+        fields = (
+            'is_favorited',
+            'author',
+            'tags',
+            'is_in_shopping_cart',
+        )
+
+    def get_favorite(self, queryset, name, item_value):
+        if self.request.user.is_authenticated and item_value:
+            queryset = queryset.filter(recipe_favorite__user=self.request.user)
+        return queryset
+
+    def get_shopping(self, queryset, name, item_value):
+        if self.request.user.is_authenticated and item_value:
+            queryset = queryset.filter(recipe_cart__user=self.request.user)
+        return queryset

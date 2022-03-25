@@ -87,20 +87,17 @@ class ListRecipeSerializer(serializers.ModelSerializer):
         return IngredientAmountSerializer(all_ingredients, many=True).data
 
     def get_is_favorited(self, obj):
-        request = self.context.get("request")
-        return (
-            False
-            if not request or request.user.is_anonymous
-            else Favorite.objects.filter(recipe=obj, user=request.user).exists()
-        )
+        request = self.context.get('request')
+        if not request or request.user.is_anonymous:
+            return False
+        return Favorite.objects.filter(recipe=obj, user=request.user).exists()
 
     def get_is_in_shopping_cart(self, obj):
-        request = self.context.get("request")
-        return (
-            False
-            if not request or request.user.is_anonymous
-            else ShopingCart.objects.filter(recipe=obj, user=request.user).exists()
-        )
+        request = self.context.get('request')
+        if not request or request.user.is_anonymous:
+            return False
+        return ShopingCart.objects.filter(recipe=obj,
+                                           user=request.user).exists()
 
 
 class AddRecipeIngredientsSerializer(serializers.ModelSerializer):
@@ -140,7 +137,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
     def validate_cooking_time(self, cooking_time):
         if cooking_time < 1:
             raise serializers.ValidationError(
-                "Cooking time must be more than 0")
+                "Время приготовления должно быть больше 0")
         return cooking_time
 
     @staticmethod

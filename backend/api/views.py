@@ -1,6 +1,7 @@
 from api.filters import CustomRecipeFilter
 from api.models import (Favorite, Ingredient, IngredientAmount, Recipe,
                         ShopingCart, Tag)
+from api.pagination import CustomPagination
 from api.serializers import (CreateRecipeSerializer, FavoriteSerializer,
                              IngredientSerializer, ListRecipeSerializer,
                              ShoppingCartSerializer, TagSerializer)
@@ -11,7 +12,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from foodgram.permissions import IsAuthorOrAdminOrReadOnly
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
@@ -49,15 +49,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
         IsAuthorOrAdminOrReadOnly,
     ]
     serializer_class = CreateRecipeSerializer
-    pagination_class = LimitOffsetPagination
+    pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = CustomRecipeFilter
 
     def get_serializer_class(self):
         if self.request.method == "POST" or self.request.method == "PATCH":
             return CreateRecipeSerializer
-        if self.request.method == "GET":
-            return ListRecipeSerializer
+        return ListRecipeSerializer
 
     @action(
         detail=True,

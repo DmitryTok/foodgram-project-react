@@ -97,7 +97,10 @@ class Favorite(models.Model):
         on_delete=models.CASCADE,
         verbose_name="User")
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, verbose_name="Favorite recipe"
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name="recipe_favorite",
+        verbose_name="Favorite recipe"
     )
 
     class Meta:
