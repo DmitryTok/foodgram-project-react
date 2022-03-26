@@ -51,7 +51,7 @@ class CustomUserSerializer(UserSerializer):
         user = self.context.get("request").user
         if user.is_anonymous:
             return False
-        return Follow.objects.filter(user=user, following=obj.id).exists()
+        return Follow.objects.filter(user=user, following=obj).exists()
 
 
 class RecipeForFollowSerializer(serializers.ModelSerializer):
@@ -67,7 +67,7 @@ class ListFollowSerializer(serializers.ModelSerializer):
     first_name = serializers.ReadOnlyField(source="following.first_name")
     last_name = serializers.ReadOnlyField(source="following.last_name")
     is_subscribed = serializers.SerializerMethodField("get_is_subscribed")
-    recipes = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField('get_recipes')
     recipes_count = serializers.SerializerMethodField("get_recipes_count")
 
     class Meta:
@@ -81,7 +81,7 @@ class ListFollowSerializer(serializers.ModelSerializer):
             "recipes",
             "recipes_count",
         )
-        model = Follow
+        model = User
 
     def get_is_subscribed(self, obj):
         user = self.context.get("request").user
@@ -90,7 +90,7 @@ class ListFollowSerializer(serializers.ModelSerializer):
         return Follow.objects.filter(user=user, following=obj.id).exists()
 
     def get_recipes(self, obj):
-        recipes = Recipe.objects.filter(author=obj.user)
+        recipes = Recipe.objects.filter(author=obj.following)
         serializer = RecipeForFollowSerializer(recipes, many=True)
         return serializer.data
 
