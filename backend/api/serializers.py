@@ -45,7 +45,7 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         recipe_id = data["recipe"].id
         if ShopingCart.objects.filter(
                 user=user, recipe__id=recipe_id).exists():
-            raise ValidationError("This recipe already in shopping cart")
+            raise ValidationError("Этот рецепт уже добавлен в корзину")
         return data
 
 

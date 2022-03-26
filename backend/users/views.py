@@ -16,12 +16,12 @@ class FollowApiView(APIView):
         following = get_object_or_404(User, id=pk)
         if user == following:
             return Response(
-                {"error": "You can't sunscribe on yourself"},
+                {"error": "Нельзя подписаться на самого себя"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         if Follow.objects.filter(user=user, following=following).exists():
             return Response(
-                {"error": "You already subscribed on this user"},
+                {"error": "Вы уже подписаны на данного автора"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         create_follow = Follow.objects.create(user=user, following=following)

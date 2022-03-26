@@ -70,7 +70,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == "POST":
             if ShopingCart.objects.filter(user=user, recipe=recipe).exists():
                 return Response(
-                    {"error": "This recipe already in shopping cart"},
+                    {"error": "Этот рецепт уже добавлен в корзину"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             shoping_cart = ShopingCart.objects.create(user=user, recipe=recipe)
@@ -99,7 +99,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == "POST":
             if Favorite.objects.filter(user=user, recipe=recipe).exists():
                 return Response(
-                    {"error": "This recipe already in favorite"},
+                    {"error": "Етот рецепт уже добавлин в избранное"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             favorite = Favorite.objects.create(user=user, recipe=recipe)
