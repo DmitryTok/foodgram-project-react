@@ -22,6 +22,7 @@ class IngredientAdmin(admin.ModelAdmin):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "author")
+    list_filter = ("name", "author")
     empty_value_display = "-NONE-"
 
     def count_favorite(self, obj):
@@ -32,12 +33,14 @@ class RecipeAdmin(admin.ModelAdmin):
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ("id", "user", "recipe")
+    list_filter = ("user",)
     empty_value_display = "-NONE-"
 
 
 @admin.register(ShopingCart)
 class ShopingCartAdmin(admin.ModelAdmin):
     list_display = ("id", "user", "recipe")
+    list_filter = ("user",)
     empty_value_display = "-NONE-"
 
 
